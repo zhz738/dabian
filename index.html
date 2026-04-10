@@ -430,47 +430,108 @@
     </section>
 
     <!-- 调查问题诊断 -->
-    <section id="diagnosis" class="h-screen bg-light relative">
+    <section id="diagnosis" class="h-screen bg-white relative">
         <div class="container mx-auto px-4">
             <div class="section-content">
-                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">四、调查问题诊断</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
-                        <h3 class="text-xl font-semibold mb-3 text-primary">学生问卷洞察（N=300）</h3>
-                        <div class="mb-4">
-                            <div class="flex justify-between mb-1">
-                                <span>认知度</span>
-                                <span>12.5%</span>
+                <div class="mb-12 fade-in">
+                    <h2 class="text-3xl font-bold mb-8 text-center">04 现实情况如何？——基于调查的问题诊断</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <!-- 学生问卷洞察 -->
+                    <div class="bg-white rounded-lg shadow card-hover fade-in">
+                        <div class="bg-primary text-white p-4 rounded-t-lg flex items-center gap-2">
+                            <div class="text-xl">👥</div>
+                            <h3 class="text-xl font-semibold">学生问卷洞察（N=300）</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="text-primary text-xl">👁</div>
+                                    <div>
+                                        <span class="font-semibold">认知度：仅</span>
+                                        <span class="text-primary font-bold text-xl">12.5%</span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-primary h-4 rounded-full" style="width: 12.5%"></div>
+                                </div>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-4">
-                                <div class="bg-primary h-4 rounded-full" style="width: 12.5%"></div>
+                            <div class="mb-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="text-primary text-xl">❤️</div>
+                                    <div>
+                                        <span class="font-semibold">兴趣度：高达</span>
+                                        <span class="text-primary font-bold text-xl">78%</span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-primary h-4 rounded-full" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <h4 class="font-semibold mb-2">接触渠道单一</h4>
+                                <p>85%学生仅通过活动/新闻了解，音乐课堂作为主渠道的功能严重缺失。</p>
                             </div>
                         </div>
-                        <div class="mb-4">
-                            <div class="flex justify-between mb-1">
-                                <span>兴趣度</span>
-                                <span>78%</span>
+                    </div>
+                    
+                    <!-- 教师访谈困境 -->
+                    <div class="bg-white rounded-lg shadow card-hover fade-in">
+                        <div class="bg-primary text-white p-4 rounded-t-lg flex items-center gap-2">
+                            <div class="text-xl">👨‍🏫</div>
+                            <h3 class="text-xl font-semibold">教师访谈困境（N=5）</h3>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="flex items-start gap-3">
+                                <div class="text-primary text-xl mt-1">📚</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">资源短缺</h4>
+                                    <p>缺少系统乐谱、音视频资料</p>
+                                </div>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-4">
-                                <div class="bg-primary h-4 rounded-full" style="width: 78%"></div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-primary text-xl mt-1">🎵</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">能力不足</h4>
+                                    <p>年轻教师缺方言戏曲功底</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-primary text-xl mt-1">⏰</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">课时紧张</h4>
+                                    <p>升学压力大，无精力开发</p>
+                                </div>
                             </div>
                         </div>
-                        <p>接触渠道单一：85% 学生仅通过活动 / 新闻了解，音乐课堂作为主渠道的功能严重缺失</p>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
-                        <h3 class="text-xl font-semibold mb-3 text-primary">教师访谈困境（N=5）</h3>
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li>资源短缺：缺少系统乐谱、音视频资料</li>
-                            <li>能力不足：年轻教师缺方言戏曲功底</li>
-                            <li>课时紧张：升学压力大，无精力开发</li>
-                        </ul>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in md:col-span-2">
-                        <h3 class="text-xl font-semibold mb-3 text-primary">核心问题归因</h3>
-                        <p class="mb-4">碎片化资源 VS 系统化课程当前教育供给侧存在严重脱节，现有零散的红色音乐素材无法支撑标准化、体系化的课堂教学需求。</p>
-                        <p class="font-semibold">诊断结论：需构建系统化的红色音乐校本课程体系，破解供需脱节难题。</p>
+                    
+                    <!-- 核心问题归因 -->
+                    <div class="bg-white rounded-lg shadow card-hover fade-in">
+                        <div class="bg-primary text-white p-4 rounded-t-lg flex items-center gap-2">
+                            <div class="text-xl">🔍</div>
+                            <h3 class="text-xl font-semibold">核心问题归因</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-primary/10 p-4 rounded-lg mb-6 text-center">
+                                <h4 class="font-semibold text-primary mb-2">碎片化资源</h4>
+                                <div class="text-xl font-bold mb-2">VS</div>
+                                <h4 class="font-semibold text-primary">系统化课程</h4>
+                            </div>
+                            <p>当前教育供给侧存在严重脱节，现有零散的红色音乐素材无法支撑标准化、体系化的课堂教学需求。</p>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- 诊断结论 -->
+                <div class="fade-in">
+                    <div class="bg-primary text-white p-6 rounded-lg shadow-lg text-center">
+                        <h3 class="text-xl font-semibold mb-3">诊断结论</h3>
+                        <p>需构建系统化的红色音乐校本课程体系，破解供需脱节难题</p>
+                    </div>
+                </div>
+                
                 <footer class="mt-12 text-center text-sm text-gray-500">
                     宁德师范学院 教育学院 2026年4月
                 </footer>

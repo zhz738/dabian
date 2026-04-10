@@ -248,6 +248,9 @@
                         <p>以宁德市高级中学为个案，探索闽东红色音乐资源在中学美育课堂的应用路径。</p>
                     </div>
                 </div>
+                <div class="mt-8 fade-in">
+                    <img src="图片1.png" alt="研究背景图片" class="w-full max-h-[400px] object-cover rounded-lg shadow-md">
+                </div>
                 <footer class="mt-12 text-center text-sm text-gray-500">
                     宁德师范学院 教育学院 2026年4月
                 </footer>
@@ -316,9 +319,7 @@
                     </div>
                 </div>
                 <div class="mt-12 fade-in">
-                    <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-                        <p class="text-gray-500">图片：宁德红色音乐资源分布图</p>
-                    </div>
+                    <img src="图片2.png" alt="宁德红色音乐资源分布图" class="w-full max-h-[400px] object-cover rounded-lg shadow-md">
                 </div>
                 <footer class="mt-12 text-center text-sm text-gray-500">
                     宁德师范学院 教育学院 2026年4月
@@ -410,9 +411,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center fade-in">
-                    <p class="text-gray-500">图片："赏、唱、创、演" 教学模式流程图</p>
-                </div>
+
                 <footer class="mt-12 text-center text-sm text-gray-500">
                     宁德师范学院 教育学院 2026年4月
                 </footer>
@@ -452,9 +451,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center fade-in">
-                    <p class="text-gray-500">图片：《无名英雄颂》教学案例展示</p>
-                </div>
+
                 <footer class="mt-12 text-center text-sm text-gray-500">
                     宁德师范学院 教育学院 2026年4月
                 </footer>
@@ -604,12 +601,7 @@
         <button class="nav-btn prev-btn" data-target="future">←</button>
     </section>
 
-    <!-- 音乐播放器 -->
-    <div class="player" id="musicPlayer" style="display: none;">
-        <button id="playPause" class="w-8 h-8 flex items-center justify-center">▶</button>
-        <span id="currentSong">红色音乐</span>
-        <audio id="audioElement" src=""></audio>
-    </div>
+    
 
     <script>
         // 向右箭头按钮点击事件
@@ -770,39 +762,7 @@
             sections[index].scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 音乐播放器
-        const musicPlayer = document.getElementById('musicPlayer');
-        const playPauseButton = document.getElementById('playPause');
-        const audioElement = document.getElementById('audioElement');
-        const currentSongElement = document.getElementById('currentSong');
 
-        // 监听滚动，在特定章节显示播放器
-        window.addEventListener('scroll', () => {
-            const resourcesSection = document.getElementById('resources');
-            const caseSection = document.getElementById('case');
-            const rect1 = resourcesSection.getBoundingClientRect();
-            const rect2 = caseSection.getBoundingClientRect();
-            
-            if (rect1.top < window.innerHeight && rect1.bottom > 0 || rect2.top < window.innerHeight && rect2.bottom > 0) {
-                musicPlayer.style.display = 'flex';
-            } else {
-                musicPlayer.style.display = 'none';
-            }
-        });
-
-        playPauseButton.addEventListener('click', () => {
-            if (audioElement.paused) {
-                audioElement.play();
-                playPauseButton.textContent = '⏸';
-            } else {
-                audioElement.pause();
-                playPauseButton.textContent = '▶';
-            }
-        });
-
-        // 预留音频链接替换位
-        // audioElement.src = '你的音频链接';
-        // currentSongElement.textContent = '歌曲名称';
     </script>
 </body>
 </html>

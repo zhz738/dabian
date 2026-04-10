@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区域红色音乐在中学美育课堂的应用研究</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#C8102E',
+                        secondary: '#D4AF37',
+                        dark: '#333333',
+                        light: '#F5F5F5'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'sans-serif'],
+                        serif: ['SimSun', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+            .fade-in {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+            }
+            .fade-in.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .gradient-text {
+                background: linear-gradient(90deg, #C8102E, #D4AF37);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .progress-bar {
+                height: 4px;
+                background: #C8102E;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                z-index: 1000;
+                transition: width 0.3s ease;
+            }
+            .player {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 50px;
+                padding: 10px 20px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 999;
+            }
+            .nav-btn {
+                position: absolute;
+                bottom: 40px;
+                background: #C8102E;
+                color: white;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s ease;
+                z-index: 100;
+                cursor: pointer;
+                border: none;
+            }
+            .nav-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            }
+            .prev-btn {
+                left: 40px;
+            }
+            .next-btn {
+                right: 40px;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -300px;
+                width: 300px;
+                height: 100vh;
+                background: white;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+                z-index: 2000;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                padding: 20px;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1999;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+            .sidebar-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            .sidebar-item {
+                display: block;
+                width: 100%;
+                padding: 12px 16px;
+                margin-bottom: 8px;
+                border-radius: 8px;
+                background: #F5F5F5;
+                color: #333;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                font-size: 14px;
+            }
+            .sidebar-item:hover {
+                background: #C8102E;
+                color: white;
+            }
+            .sidebar-item.active {
+                background: #C8102E;
+                color: white;
+            }
+            .sidebar-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #C8102E;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #C8102E;
+            }
+        }
+        /* 隐藏滚动条 */
+        body {
+            overflow: hidden;
+        }
+        /* 每页独占整个屏幕 */
+        section {
+            min-height: 100vh;
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 40px 0;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .section-content {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-light text-dark font-sans">
+    <!-- 侧边导航栏 -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">目录导航</div>
+        <a href="#cover" class="sidebar-item" data-section="cover">封面</a>
+        <a href="#background" class="sidebar-item" data-section="background">一、研究背景与缘起</a>
+        <a href="#literature" class="sidebar-item" data-section="literature">二、文献回顾与研究定位</a>
+        <a href="#resources" class="sidebar-item" data-section="resources">三、宁德红色音乐资源宝库</a>
+        <a href="#diagnosis" class="sidebar-item" data-section="diagnosis">四、调查问题诊断</a>
+        <a href="#mode" class="sidebar-item" data-section="mode">五、"赏、唱、创、演" 一体化教学模式</a>
+        <a href="#case" class="sidebar-item" data-section="case">六、教学案例：《无名英雄颂》鉴赏课</a>
+        <a href="#effect" class="sidebar-item" data-section="effect">七、教学实践成效</a>
+        <a href="#conclusion" class="sidebar-item" data-section="conclusion">八、研究结论</a>
+        <a href="#future" class="sidebar-item" data-section="future">九、研究不足与展望</a>
+        <a href="#thanks" class="sidebar-item" data-section="thanks">十、致谢</a>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- 封面页 -->
+    <section id="cover" class="h-screen flex items-center justify-center bg-gradient-to-b from-primary/10 to-white relative">
+        <div class="container mx-auto px-4 text-center fade-in">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 gradient-text">区域红色音乐在中学美育课堂的应用研究</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-8">—— 以宁德市高级中学为例</h2>
+            <div class="space-y-3 text-lg">
+                <p>答辩人：易晨颖</p>
+                <p>指导教师：王育红 副教授</p>
+                <p>院系：宁德师范学院 教育学院</p>
+                <p>日期：2026 年 4 月</p>
+                <p class="mt-6 font-semibold">主题：美育与德育协同育人・传承红色基因</p>
+            </div>
+        </div>
+        <footer class="absolute bottom-4 left-0 right-0 text-center text-sm text-gray-500">
+            宁德师范学院 教育学院 2026年4月
+        </footer>
+        <button class="nav-btn next-btn" data-target="background">→</button>
+    </section>
+
+    <!-- 研究背景与缘起 -->
+    <section id="background" class="h-screen bg-white relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">一、研究背景与缘起</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">时代要求：国家战略指引</h3>
+                        <p>新时代文化强国背景下，传承红色基因、加强美育已成为国家层面的重要要求。</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">现实困境：美育同质化</h3>
+                        <p>当前中学美育多依赖统编教材，与学生生活、地方文化脱节，呈现 "千校一面" 现象。</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">核心问题：打破课堂围墙</h3>
+                        <p>如何将本土红色音乐转化为鲜活素材，实现美育与德育的协同育人？</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">研究切入点：闽东个案探索</h3>
+                        <p>以宁德市高级中学为个案，探索闽东红色音乐资源在中学美育课堂的应用路径。</p>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="cover">←</button>
+        <button class="nav-btn next-btn" data-target="literature">→</button>
+    </section>
+
+    <!-- 文献回顾与研究定位 -->
+    <section id="literature" class="h-screen bg-light relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">二、文献回顾与研究定位</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">研究共识</h3>
+                        <p>学界普遍认可红色音乐集政治性、艺术性、历史性于一体的综合教育价值，奠定了本研究的理论根基。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">"高热低冷" 现象</h3>
+                        <p>研究多集中于高校领域，针对中小学阶段的实践探索与理论构建相对薄弱，存在明显的学段断层。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">"经典依赖" 倾向</h3>
+                        <p>现有成果多聚焦《黄河大合唱》等全国性经典红歌，对具有地方特色的 "小众" 红色音乐关注不足。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">"在地化" 趋势萌芽</h3>
+                        <p>虽已开始关注资源 "在地化"，但针对地市级中学的系统性课程开发研究目前尚属空白。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in md:col-span-2 lg:col-span-1">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">本研究定位</h3>
+                        <p>聚焦地方红色音乐资源，填补在地化美育课程研究的空白，探索一条适合地市级中学的特色美育改革路径。</p>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="background">←</button>
+        <button class="nav-btn next-btn" data-target="resources">→</button>
+    </section>
+
+    <!-- 宁德红色音乐资源宝库 -->
+    <section id="resources" class="h-screen bg-white relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">三、宁德红色音乐资源宝库</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">历史脉络：从革命烽火到建设热潮</h3>
+                        <p>土地革命：《送郎当红军》彰显斗争精神与群众基础</p>
+                        <p>建设时期：古田溪建设歌曲诠释 "人定胜天" 的奋斗精神</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">资源宝库：20 + 首代表性作品分类</h3>
+                        <p>叙事民歌（如《今生守候》）、抒情山歌（如《红旗不倒》）</p>
+                        <p>红色戏曲（闽剧 / 北路戏）：融合非遗传承与红色文化</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">教育价值：乡土情感与精神塑造</h3>
+                        <p>唤起乡土共鸣，优化审美素养，感受独特闽东风韵</p>
+                        <p>传承 "弱鸟先飞、滴水穿石" 的闽东精神内核</p>
+                    </div>
+                </div>
+                <div class="mt-12 fade-in">
+                    <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
+                        <p class="text-gray-500">图片：宁德红色音乐资源分布图</p>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="literature">←</button>
+        <button class="nav-btn next-btn" data-target="diagnosis">→</button>
+    </section>
+
+    <!-- 调查问题诊断 -->
+    <section id="diagnosis" class="h-screen bg-light relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">四、调查问题诊断</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">学生问卷洞察（N=300）</h3>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span>认知度</span>
+                                <span>12.5%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bg-primary h-4 rounded-full" style="width: 12.5%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span>兴趣度</span>
+                                <span>78%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bg-primary h-4 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <p>接触渠道单一：85% 学生仅通过活动 / 新闻了解，音乐课堂作为主渠道的功能严重缺失</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">教师访谈困境（N=5）</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>资源短缺：缺少系统乐谱、音视频资料</li>
+                            <li>能力不足：年轻教师缺方言戏曲功底</li>
+                            <li>课时紧张：升学压力大，无精力开发</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in md:col-span-2">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">核心问题归因</h3>
+                        <p class="mb-4">碎片化资源 VS 系统化课程当前教育供给侧存在严重脱节，现有零散的红色音乐素材无法支撑标准化、体系化的课堂教学需求。</p>
+                        <p class="font-semibold">诊断结论：需构建系统化的红色音乐校本课程体系，破解供需脱节难题。</p>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="resources">←</button>
+        <button class="nav-btn next-btn" data-target="mode">→</button>
+    </section>
+
+    <!-- "赏、唱、创、演" 一体化教学模式 -->
+    <section id="mode" class="h-screen bg-white relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">五、"赏、唱、创、演" 一体化教学模式</h2>
+                <div class="bg-light p-8 rounded-lg shadow mb-12 fade-in">
+                    <p class="text-lg mb-6">总体策略：构建 "赏、唱、创、演" 四位一体闭环，开发《闽东红韵》校本微课程，实现审美与育人统一。</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">赏・审美感知</h3>
+                            <p>识别闽东红色音乐独特风格，建立初步的红色音乐审美体验与感知力</p>
+                            <p class="mt-2 font-semibold">对应单元：第一单元《听见闽东》</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">唱・艺术表现</h3>
+                            <p>能用方言或普通话完整演唱 2-3 首红歌，掌握基础演唱技巧与情感表达</p>
+                            <p class="mt-2 font-semibold">对应单元：第二单元《歌声里的岁月》</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">创・创意实践</h3>
+                            <p>尝试为传统红色歌谣重新填词，或利用简单乐器编配伴奏，激发创新思维</p>
+                            <p class="mt-2 font-semibold">对应单元：第三单元《红色新声》</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">演・文化理解</h3>
+                            <p>通过舞台展演深入理解歌曲背后的革命历史，传承与弘扬 "红旗不倒" 精神</p>
+                            <p class="mt-2 font-semibold">对应单元：第四单元《红土地的礼赞》</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center fade-in">
+                    <p class="text-gray-500">图片："赏、唱、创、演" 教学模式流程图</p>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="diagnosis">←</button>
+        <button class="nav-btn next-btn" data-target="case">→</button>
+    </section>
+
+    <!-- 教学案例：《无名英雄颂》鉴赏课 -->
+    <section id="case" class="h-screen bg-light relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">六、教学案例：《无名英雄颂》鉴赏课</h2>
+                <div class="bg-white p-8 rounded-lg shadow mb-12 fade-in">
+                    <p class="text-lg mb-6 font-semibold">教学理念：以美育浸润心灵，以英雄精神滋养品格</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-light p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">环节一：情境导入</h3>
+                            <p>播放戍边英雄陈祥榕事迹短片，引出 "清澈的爱，只为中国" 主题</p>
+                            <p class="mt-2 font-semibold">目的：营造情感冲击力，建立共鸣</p>
+                        </div>
+                        <div class="bg-light p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">环节二：聆听与分析</h3>
+                            <p>聆听原创歌曲《清澈的爱》，深度解析旋律线条与情感表达逻辑</p>
+                            <p class="mt-2 font-semibold">目的：情感具象化，提升审美力</p>
+                        </div>
+                        <div class="bg-light p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">环节三：拓展与共情</h3>
+                            <p>讲述英雄事迹，引导讨论 "清澈" 与 "报国" 的深层含义</p>
+                            <p class="mt-2 font-semibold">目的：精神领悟，深化爱国情</p>
+                        </div>
+                        <div class="bg-light p-6 rounded-lg shadow card-hover">
+                            <h3 class="text-xl font-semibold mb-3 text-primary">环节四：实践体验</h3>
+                            <p>全体学生随伴奏轻声哼唱主题旋律，表达内心感动</p>
+                            <p class="mt-2 font-semibold">目的：认同转表达，情感内化</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-200 rounded-lg aspect-video flex items-center justify-center fade-in">
+                    <p class="text-gray-500">图片：《无名英雄颂》教学案例展示</p>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="mode">←</button>
+        <button class="nav-btn next-btn" data-target="effect">→</button>
+    </section>
+
+    <!-- 教学实践成效 -->
+    <section id="effect" class="h-screen bg-white relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">七、教学实践成效</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">学习兴趣显著提升</h3>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span>实验班</span>
+                                <span>35% → 82%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bg-primary h-4 rounded-full" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span>对照班</span>
+                                <span>41%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bg-gray-500 h-4 rounded-full" style="width: 41%"></div>
+                            </div>
+                        </div>
+                        <p>学生从 "被动听" 转变为 "主动唱"</p>
+                        <p class="mt-2 text-sm text-gray-500">数据来源：期末调研问卷</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">知识储备有效增长</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>准确叙述 3 位 + 本地革命英雄事迹</li>
+                            <li>讲解 2 首 + 闽东红歌创作背景</li>
+                        </ul>
+                        <p class="mt-4 font-semibold">核心能力：历史认知与表达</p>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">情感认同深度内化</h3>
+                        <p class="italic mb-4">"用家乡方言唱起祖辈的旋律，仿佛真的触摸到历史的温度。"</p>
+                        <p>成功唤起学生对家乡文化的归属感与认同</p>
+                        <p class="mt-4 font-semibold">育人目标：文化传承与认同</p>
+                    </div>
+                </div>
+                <div class="mt-12 text-center fade-in">
+                    <p class="text-xl font-semibold">核心口号：以歌为媒・以史育人・以情铸魂</p>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="case">←</button>
+        <button class="nav-btn next-btn" data-target="conclusion">→</button>
+    </section>
+
+    <!-- 研究结论 -->
+    <section id="conclusion" class="h-screen bg-light relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">八、研究结论</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">可行性・资源转化</h3>
+                        <p>区域红色音乐资源经过系统挖掘、整理和教学化设计，完全可以转化为高质量的校本课程资源，填补教材地域空白。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">有效性・模式创新</h3>
+                        <p>"赏、唱、创、演" 一体化教学模式能有效激发学生兴趣，彻底解决传统红色音乐教学中形式单一、内容枯燥的痛点。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">价值性・协同育人</h3>
+                        <p>该模式不仅能提升学生的音乐审美素养，更能在潜移默化中陶冶乡土情怀、增强文化自信，真正实现美育与德育的深度融合。</p>
+                    </div>
+                </div>
+                <div class="mt-12 text-center fade-in">
+                    <p class="text-xl font-semibold gradient-text">主题升华：美育与德育协同育人・红色基因代代相传</p>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="effect">←</button>
+        <button class="nav-btn next-btn" data-target="future">→</button>
+    </section>
+
+    <!-- 研究不足与展望 -->
+    <section id="future" class="h-screen bg-white relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">九、研究不足与展望</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">当前研究不足</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>资源挖掘不全面：偏重声乐形式，对器乐、戏曲等红色艺术形式挖掘不够深入</li>
+                            <li>研究样本单一：仅以一所学校为对象，缺乏横向对比，结论的普适性有待验证</li>
+                            <li>评价维度有限：目前缺乏长期的教学效果跟踪，评价方式也需更加多元化</li>
+                        </ul>
+                    </div>
+                    <div class="bg-light p-6 rounded-lg shadow card-hover fade-in">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">未来发展展望</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>数字化建设升级：搭建 "闽东红韵" 数字博物馆或小程序，打破时空限制，实现红色音乐资源的共建共享与高效传播</li>
+                            <li>跨学科融合探索：深化与语文、历史、地理等学科的融合教学，构建全方位、立体化的红色文化育人体系，提升教育厚度</li>
+                        </ul>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="conclusion">←</button>
+        <button class="nav-btn next-btn" data-target="thanks">→</button>
+    </section>
+
+    <!-- 致谢页 -->
+    <section id="thanks" class="h-screen bg-gradient-to-b from-white to-primary/10 relative">
+        <div class="container mx-auto px-4">
+            <div class="section-content">
+                <h2 class="text-3xl font-bold mb-12 text-center gradient-text">十、致谢</h2>
+                <div class="bg-white p-8 rounded-lg shadow max-w-3xl mx-auto fade-in">
+                    <div class="space-y-4">
+                        <p><span class="font-semibold">恩师指导：</span>感谢王育红副教授悉心指导与栽培</p>
+                        <p><span class="font-semibold">实践支持：</span>感谢宁德市高级中学师生的全力配合</p>
+                        <p><span class="font-semibold">亲友陪伴：</span>感谢家人朋友默默的鼓励与支持</p>
+                        <p><span class="font-semibold">母校培养：</span>感谢宁德师范学院提供的学习平台</p>
+                        <p class="mt-8 text-center font-semibold text-lg">感谢聆听・恳请批评指正</p>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center text-sm text-gray-500">
+                    宁德师范学院 教育学院 2026年4月
+                </footer>
+            </div>
+        </div>
+        <button class="nav-btn prev-btn" data-target="future">←</button>
+    </section>
+
+    <!-- 音乐播放器 -->
+    <div class="player" id="musicPlayer" style="display: none;">
+        <button id="playPause" class="w-8 h-8 flex items-center justify-center">▶</button>
+        <span id="currentSong">红色音乐</span>
+        <audio id="audioElement" src=""></audio>
+    </div>
+
+    <script>
+        // 向右箭头按钮点击事件
+        document.querySelectorAll('.next-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 向左箭头按钮点击事件
+        document.querySelectorAll('.prev-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 侧边导航栏功能
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+        // F1键触发侧边导航栏
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+        });
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        // 点击遮罩层关闭侧边栏
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // 侧边栏导航项点击事件
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        });
+
+        // 滚动动画
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        fadeElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // 进度条
+        const progressBar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+            
+            // 更新侧边栏高亮
+            updateSidebarActive();
+        });
+
+        // 更新侧边栏当前页面高亮
+        function updateSidebarActive() {
+            const sections = document.querySelectorAll('section');
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                    sidebarItems.forEach(item => item.classList.remove('active'));
+                    sidebarItems[index].classList.add('active');
+                }
+            });
+        }
+
+        // 演示模式
+        let isPresentationMode = false;
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('section');
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F5') {
+                e.preventDefault();
+                togglePresentationMode();
+            }
+            
+            if (isPresentationMode) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    goToNextSection();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    goToPrevSection();
+                } else if (e.key === 'Escape') {
+                    togglePresentationMode();
+                }
+            }
+        });
+
+        function togglePresentationMode() {
+            isPresentationMode = !isPresentationMode;
+            if (isPresentationMode) {
+                document.body.style.overflow = 'hidden';
+                document.documentElement.requestFullscreen();
+                currentSectionIndex = 0;
+                goToSection(currentSectionIndex);
+            } else {
+                document.exitFullscreen();
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function goToNextSection() {
+            if (currentSectionIndex < sections.length - 1) {
+                currentSectionIndex++;
+                goToSection(currentSectionIndex);
+            }
+        }
+
+        function goToPrevSection() {
+            if (currentSectionIndex > 0) {
+                currentSectionIndex--;
+                goToSection(currentSectionIndex);
+            }
+        }
+
+        function goToSection(index) {
+            sections[index].scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 音乐播放器
+        const musicPlayer = document.getElementById('musicPlayer');
+        const playPauseButton = document.getElementById('playPause');
+        const audioElement = document.getElementById('audioElement');
+        const currentSongElement = document.getElementById('currentSong');
+
+        // 监听滚动，在特定章节显示播放器
+        window.addEventListener('scroll', () => {
+            const resourcesSection = document.getElementById('resources');
+            const caseSection = document.getElementById('case');
+            const rect1 = resourcesSection.getBoundingClientRect();
+            const rect2 = caseSection.getBoundingClientRect();
+            
+            if (rect1.top < window.innerHeight && rect1.bottom > 0 || rect2.top < window.innerHeight && rect2.bottom > 0) {
+                musicPlayer.style.display = 'flex';
+            } else {
+                musicPlayer.style.display = 'none';
+            }
+        });
+
+        playPauseButton.addEventListener('click', () => {
+            if (audioElement.paused) {
+                audioElement.play();
+                playPauseButton.textContent = '⏸';
+            } else {
+                audioElement.pause();
+                playPauseButton.textContent = '▶';
+            }
+        });
+
+        // 预留音频链接替换位
+        // audioElement.src = '你的音频链接';
+        // currentSongElement.textContent = '歌曲名称';
+    </script>
+</body>
+</html>
